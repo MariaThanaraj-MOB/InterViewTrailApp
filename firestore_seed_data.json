@@ -1,0 +1,131 @@
+{
+  "TechnologyStack": [
+    { "name": "Android", "is_active": true },
+    { "name": "iOS", "is_active": true },
+    { "name": "Mobile Hybrid", "is_active": true },
+    { "name": "Frontend", "is_active": true },
+    { "name": "Backend", "is_active": true },
+    { "name": "Full Stack", "is_active": true },
+    { "name": "Data Science", "is_active": true },
+    { "name": "Data Engineering", "is_active": true },
+    { "name": "DevOps", "is_active": true },
+    { "name": "Cloud", "is_active": true },
+    { "name": "SAP", "is_active": true },
+    { "name": "E-commerce", "is_active": true },
+    { "name": "Oracle", "is_active": true },
+    { "name": "Database Administration", "is_active": true },
+    { "name": "Testing/QA", "is_active": true },
+    { "name": "UI/UX Design", "is_active": true },
+    { "name": "Embedded Systems", "is_active": true },
+    { "name": "Machine Learning/AI", "is_active": true },
+    { "name": "Cybersecurity", "is_active": true },
+    { "name": "Networking", "is_active": true }
+  ],
+  "Domain": [
+    { "name": "Banking/Financial Services", "is_active": true },
+    { "name": "Insurance", "is_active": true },
+    { "name": "Healthcare", "is_active": true },
+    { "name": "E-commerce/Retail", "is_active": true },
+    { "name": "Telecom", "is_active": true },
+    { "name": "Education/EdTech", "is_active": true },
+    { "name": "Travel/Hospitality", "is_active": true },
+    { "name": "Logistics/Supply Chain", "is_active": true },
+    { "name": "Manufacturing", "is_active": true },
+    { "name": "Media/Entertainment", "is_active": true },
+    { "name": "Government/Public Sector", "is_active": true },
+    { "name": "Real Estate", "is_active": true },
+    { "name": "Automotive", "is_active": true },
+    { "name": "Energy/Utilities", "is_active": true },
+    { "name": "HR/HRTech", "is_active": true }
+  ],
+  "PostType": [
+    { "name": "Interview Experience" },
+    { "name": "Work Status" },
+    { "name": "Seminar/Workshop" }
+  ],
+  "ExperienceLevel": [
+    { "label": "Fresher/0yr", "min_years": 0, "max_years": 0 },
+    { "label": "0-1 years", "min_years": 0, "max_years": 1 },
+    { "label": "1-3 years", "min_years": 1, "max_years": 3 },
+    { "label": "3-5 years", "min_years": 3, "max_years": 5 },
+    { "label": "5-8 years", "min_years": 5, "max_years": 8 },
+    { "label": "8-12 years", "min_years": 8, "max_years": 12 },
+    { "label": "12+ years", "min_years": 12, "max_years": 99 }
+  ],
+  "Designation": [
+    { "title": "Software Engineer" },
+    { "title": "Senior Software Engineer" },
+    { "title": "Associate Software Engineer" },
+    { "title": "Technical Lead" },
+    { "title": "Engineering Manager" },
+    { "title": "QA Engineer" },
+    { "title": "DevOps Engineer" },
+    { "title": "Data Analyst" },
+    { "title": "Data Scientist" },
+    { "title": "Product Manager" },
+    { "title": "Business Analyst" },
+    { "title": "UI/UX Designer" },
+    { "title": "System Administrator" },
+    { "title": "Database Administrator" }
+  ],
+  "Gender": [
+    { "label": "Male" },
+    { "label": "Female" },
+    { "label": "Other" },
+    { "label": "Prefer not to say" }
+  ],
+  "Country": [
+    { "name": "India" }
+  ],
+  "State": [
+    { "name": "Karnataka", "country_name": "India" },
+    { "name": "Telangana", "country_name": "India" },
+    { "name": "Maharashtra", "country_name": "India" },
+    { "name": "Tamil Nadu", "country_name": "India" },
+    { "name": "West Bengal", "country_name": "India" },
+    { "name": "Delhi NCR", "country_name": "India" },
+    { "name": "Haryana", "country_name": "India" },
+    { "name": "Uttar Pradesh", "country_name": "India" },
+    { "name": "Gujarat", "country_name": "India" },
+    { "name": "Kerala", "country_name": "India" }
+  ],
+  "City": [
+    { "name": "Bangalore", "state_name": "Karnataka" },
+    { "name": "Hyderabad", "state_name": "Telangana" },
+    { "name": "Mumbai", "state_name": "Maharashtra" },
+    { "name": "Pune", "state_name": "Maharashtra" },
+    { "name": "Chennai", "state_name": "Tamil Nadu" },
+    { "name": "Coimbatore", "state_name": "Tamil Nadu" },
+    { "name": "Kolkata", "state_name": "West Bengal" },
+    { "name": "Delhi", "state_name": "Delhi NCR" },
+    { "name": "Gurgaon", "state_name": "Haryana" },
+    { "name": "Noida", "state_name": "Delhi NCR" },
+    { "name": "Ahmedabad", "state_name": "Gujarat" },
+    { "name": "Kochi", "state_name": "Kerala" },
+    { "name": "Trivandrum", "state_name": "Kerala" }
+  ],
+  "InterviewRoundType": [
+    { "name": "Online Assessment/Coding Test" },
+    { "name": "Technical Round 1" },
+    { "name": "Technical Round 2" },
+    { "name": "Managerial Round" },
+    { "name": "HR Round" },
+    { "name": "System Design Round" },
+    { "name": "Group Discussion" },
+    { "name": "Final/Bar Raiser Round" }
+  ],
+  "JobType": [
+    { "name": "Full-time" },
+    { "name": "Internship" },
+    { "name": "Contract" },
+    { "name": "Part-time" }
+  ],
+  "NotificationCategory": [
+    { "name": "Followed Company New Post" },
+    { "name": "Group Invitation" },
+    { "name": "New Post in Subscribed Community" },
+    { "name": "Interview Reminder" },
+    { "name": "Post-Interview Prompt" },
+    { "name": "Group Member Joined" }
+  ]
+}
