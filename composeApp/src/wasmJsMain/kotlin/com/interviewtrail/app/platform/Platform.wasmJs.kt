@@ -28,7 +28,11 @@ private class WebSpeechToText : SpeechToText {
     private var current: JsAny? = null
     override val isAvailable: Boolean = speechSupported()
 
-    override fun start(onResult: (String) -> Unit, onError: (String) -> Unit) {
+    override fun start(
+        onResult: (String) -> Unit,
+        onError: (String) -> Unit,
+        onPartialResult: ((String) -> Unit)?,
+    ) {
         stop()
         current = startRecognition(
             onText = { current = null; onResult(it) },

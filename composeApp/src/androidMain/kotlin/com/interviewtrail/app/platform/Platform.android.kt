@@ -26,9 +26,13 @@ private class AndroidSpeechToText(private val context: Context, private val askP
 
     override val isAvailable: Boolean = SpeechRecognizer.isRecognitionAvailable(context)
 
-    override fun start(onResult: (String) -> Unit, onError: (String) -> Unit) {
+    override fun start(
+        onResult: (String) -> Unit,
+        onError: (String) -> Unit,
+        onPartialResult: ((String) -> Unit)?,
+    ) {
         val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-        if (!granted) { askPermission { start(onResult, onError) }; return }
+        if (!granted) { askPermission { start(onResult, onError, onPartialResult) }; return }
 
         stop()
         recognizer = SpeechRecognizer.createSpeechRecognizer(context).apply {
@@ -50,12 +54,18 @@ private class AndroidSpeechToText(private val context: Context, private val askP
                 override fun onRmsChanged(rmsdB: Float) {}
                 override fun onBufferReceived(buffer: ByteArray?) {}
                 override fun onEndOfSpeech() {}
-                override fun onPartialResults(partialResults: Bundle?) {}
+                override fun onPartialResults(partialResults: Bundle?) {
+                    val text = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.firstOrNull()
+                    if (!text.isNullOrBlank()) {
+                        onPartialResult?.invoke(text)
+                    }
+                }
                 override fun onEvent(eventType: Int, params: Bundle?) {}
             })
             startListening(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-IN")   // English only
+                putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
             })
         }
     }

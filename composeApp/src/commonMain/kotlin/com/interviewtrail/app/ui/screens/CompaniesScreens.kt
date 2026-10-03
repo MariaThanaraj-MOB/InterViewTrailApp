@@ -1,9 +1,11 @@
 package com.interviewtrail.app.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -36,7 +38,34 @@ fun CompaniesScreen() {
                     EmptyState("No company matches \"$debounced\". Suggest it from your profile and we'll add it.")
                 }
                 items(companies, key = { it.id }) { c ->
-                    RowItem(c.name, if (c.id in followed) "Following" else null, onClick = { nav.push(Screen.CompanyDetail(c)) })
+                    val statusText = if (c.isActive) "Active" else "Inactive"
+                    val followText = if (c.id in followed) " • Following" else ""
+                    RowItem(
+                        title = c.name,
+                        subtitle = "$statusText$followText",
+                        onClick = { nav.push(Screen.CompanyDetail(c)) },
+                        leading = {
+                            val letterBadge: @Composable () -> Unit = {
+                                Box(
+                                    modifier = Modifier.size(40.dp).clip(MaterialTheme.shapes.small)
+                                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                                    contentAlignment = androidx.compose.ui.Alignment.Center
+                                ) {
+                                    Text(c.name.take(1).uppercase(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
+                            }
+                            if (!c.logoUrl.isNullOrBlank()) {
+                                NetworkImage(
+                                    url = c.logoUrl,
+                                    contentDescription = "${c.name} logo",
+                                    modifier = Modifier.size(40.dp).clip(MaterialTheme.shapes.small),
+                                    fallback = letterBadge
+                                )
+                            } else {
+                                letterBadge()
+                            }
+                        }
+                    )
                 }
             }
         }

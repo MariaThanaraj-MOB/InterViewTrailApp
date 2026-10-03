@@ -8,6 +8,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
@@ -399,29 +401,77 @@ private fun PostBody(p: Post) {
         when (p.type) {
             PostType.INTERVIEW_EXPERIENCE -> p.interview?.let { iv ->
                 Text("Interviewed on ${iv.interviewDate}", style = MaterialTheme.typography.bodyMedium)
-                iv.rounds.forEach { r ->
-                    Surface(shape = MaterialTheme.shapes.medium, shadowElevation = 1.dp, color = MaterialTheme.colorScheme.surface) {
-                        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            Text(r.roundName, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-                            r.questions.forEachIndexed { index, qa ->
-                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    Text(
-                                        text = "Q${index + 1}: ${qa.question}",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Text(
-                                        text = if (qa.answer.isNotBlank()) "A: ${qa.answer}" else "A: Answer not mentioned.",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = if (qa.answer.isNotBlank()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.outline
-                                    )
-                                }
+                
+                val allQuestions = iv.rounds.flatMap { r -> 
+                    r.questions.map { q -> r.roundName to q }
+                }
+                
+                if (allQuestions.isNotEmpty()) {
+                    val pagerState = androidx.compose.foundation.pager.rememberPagerState(pageCount = { allQuestions.size })
+                    val scope = rememberCoroutineScope()
+                    
+                    Text("Questions (${pagerState.currentPage + 1}/${allQuestions.size})", style = MaterialTheme.typography.titleMedium)
+                    
+                    androidx.compose.foundation.pager.HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier.fillMaxWidth()
+                    ) { page ->
+                        val (roundName, qa) = allQuestions[page]
+                        Surface(
+                            shape = MaterialTheme.shapes.medium, 
+                            shadowElevation = 2.dp, 
+                            color = MaterialTheme.colorScheme.surface,
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp)
+                        ) {
+                            Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                Text(
+                                    text = roundName, 
+                                    style = MaterialTheme.typography.labelMedium, 
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Q: ${qa.question}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                                Text(
+                                    text = if (qa.answer.isNotBlank()) "A: ${qa.answer}" else "A: Answer not mentioned.",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = if (qa.answer.isNotBlank()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.outline
+                                )
                             }
                         }
                     }
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextButton(
+                            onClick = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) } },
+                            enabled = pagerState.currentPage > 0
+                        ) {
+                            Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Previous")
+                            Spacer(Modifier.width(4.dp))
+                            Text("Previous")
+                        }
+                        
+                        TextButton(
+                            onClick = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } },
+                            enabled = pagerState.currentPage < allQuestions.size - 1
+                        ) {
+                            Text("Next")
+                            Spacer(Modifier.width(4.dp))
+                            Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Next")
+                        }
+                    }
                 }
+
                 iv.notes?.let {
+                    Spacer(Modifier.height(12.dp))
                     Text("Notes", style = MaterialTheme.typography.titleMedium)
                     Text(it, style = MaterialTheme.typography.bodyLarge)
                 }

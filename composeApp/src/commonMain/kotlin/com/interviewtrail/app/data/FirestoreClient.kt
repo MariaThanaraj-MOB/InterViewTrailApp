@@ -25,17 +25,25 @@ class FirestoreClient(
     
     suspend fun uploadFile(path: String, bytes: ByteArray): String {
         val bucket = AppConfig.FIREBASE_STORAGE_BUCKET
-        val encodedPath = path.encodeURLPathPart()
-        val url = "https://firebasestorage.googleapis.com/v0/b/$bucket/o?name=$encodedPath"
+        // Firebase Storage object names must have slashes URL-encoded (%2F) in both query params and object URLs
+        val encodedName = path.split("/").joinToString("%2F") { it.encodeURLPathPart() }
+        val url = "https://firebasestorage.googleapis.com/v0/b/$bucket/o?uploadType=media&name=$encodedName"
         val res = http.post(url) {
             authorize()
             contentType(ContentType.Image.JPEG)
             setBody(bytes)
         }
-        if (!res.status.isSuccess()) throw ApiException("Storage upload failed (${res.status.value})")
+        if (!res.status.isSuccess()) {
+            val errorMsg = when (res.status) {
+                HttpStatusCode.NotFound -> "Firebase Storage bucket '$bucket' not found. Storage must be initialized in Firebase Console (Build > Storage)."
+                HttpStatusCode.Forbidden, HttpStatusCode.Unauthorized -> "Firebase Storage permission denied (${res.status.value}). Check Firebase Storage Rules."
+                else -> "Storage upload failed (${res.status.value})"
+            }
+            throw ApiException(errorMsg)
+        }
         val body = res.body<JsonObject>()
         val token = body["downloadTokens"]?.jsonPrimitive?.content ?: ""
-        return "https://firebasestorage.googleapis.com/v0/b/$bucket/o/$encodedPath?alt=media&token=$token"
+        return "https://firebasestorage.googleapis.com/v0/b/$bucket/o/$encodedName?alt=media&token=$token"
     }
 
     suspend fun getDoc(collection: String, docId: String): JsonObject? {

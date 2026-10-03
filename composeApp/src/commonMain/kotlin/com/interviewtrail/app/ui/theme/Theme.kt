@@ -11,65 +11,115 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /*
- * UI theme based on standard HTML wireframes and logo:
- * Crisp whites, dark navy accents, teal gradients, and light muted borders.
+ * Modern 2026 UI Theme:
+ * Deep Slate Navy, Electric Teal/Emerald accents, crisp Pearl Slate backgrounds,
+ * glassmorphic surfaces, subtle hairline borders, and smooth rounded geometry.
  */
-private val NavyBlue = Color(0xFF123A5E)
-private val NavyBlueDeep = Color(0xFF0B2A46)
-private val Teal = Color(0xFF2FBF9E)
-private val TealText = Color(0xFF1C8E76)
-private val TealBg = Color(0xFFE3F7F1)
-private val Cream = Color(0xFFF4F8F7)
-private val Border = Color(0xFFDCE6E3)
-private val Muted = Color(0xFF788088)
-private val TextDark = Color(0xFF152534)
-private val BackgroundMain = Color(0xFFD6DCDA)
+private val SlateDark = Color(0xFF0F172A)
+private val SlateNavy = Color(0xFF1E293B)
+private val SlateSubtle = Color(0xFF334155)
+
+private val TealPrimary = Color(0xFF0D9488)
+private val TealLight = Color(0xFF14B8A6)
+private val TealWash = Color(0xFFCCFBF1)
+private val TealSurface = Color(0xFFF0FDFA)
+
+private val RoyalBlue = Color(0xFF2563EB)
+private val RoyalBlueWash = Color(0xFFEFF6FF)
+
+private val BackgroundLight = Color(0xFFF8FAFC)
+private val SurfaceLight = Color(0xFFFFFFFF)
+private val SurfaceVariantLight = Color(0xFFF1F5F9)
+private val BorderLight = Color(0xFFE2E8F0)
+private val BorderSubtle = Color(0xFFF1F5F9)
+private val TextMutedLight = Color(0xFF64748B)
+
+private val BackgroundDark = Color(0xFF0B0F17)
+private val SurfaceDark = Color(0xFF131A26)
+private val SurfaceVariantDark = Color(0xFF1C2636)
+private val BorderDark = Color(0xFF243042)
+private val TextMutedDark = Color(0xFF94A3B8)
 
 private val Light = lightColorScheme(
-    primary = NavyBlue, onPrimary = Color.White,
-    primaryContainer = TealBg, onPrimaryContainer = TealText,
-    secondary = Teal, onSecondary = Color.White,
-    secondaryContainer = TealBg, onSecondaryContainer = NavyBlue,
-    tertiary = NavyBlueDeep, tertiaryContainer = Border, onTertiaryContainer = TextDark,
-    background = Cream, onBackground = TextDark,
-    surface = Color.White, onSurface = TextDark,
-    surfaceVariant = Color(0xFFFCFBF8), onSurfaceVariant = Muted,
-    surfaceContainerLowest = Color.White, surfaceContainerLow = Color(0xFFFCFBF8),
-    surfaceContainer = Cream, surfaceContainerHigh = Border,
-    outline = Border, outlineVariant = Color(0xFFEEE9DD),
-    error = Color(0xFFCC1016),
+    primary = SlateDark,
+    onPrimary = Color.White,
+    primaryContainer = TealSurface,
+    onPrimaryContainer = TealPrimary,
+    secondary = TealPrimary,
+    onSecondary = Color.White,
+    secondaryContainer = TealWash,
+    onSecondaryContainer = Color(0xFF115E59),
+    tertiary = RoyalBlue,
+    tertiaryContainer = RoyalBlueWash,
+    onTertiaryContainer = Color(0xFF1E40AF),
+    background = BackgroundLight,
+    onBackground = SlateDark,
+    surface = SurfaceLight,
+    onSurface = SlateDark,
+    surfaceVariant = SurfaceVariantLight,
+    onSurfaceVariant = TextMutedLight,
+    surfaceContainerLowest = Color.White,
+    surfaceContainerLow = SurfaceVariantLight,
+    surfaceContainer = BackgroundLight,
+    surfaceContainerHigh = BorderLight,
+    outline = BorderLight,
+    outlineVariant = BorderSubtle,
+    error = Color(0xFFEF4444),
+    onError = Color.White,
 )
 
 private val Dark = darkColorScheme(
-    primary = Teal, onPrimary = Color(0xFF000000),
-    primaryContainer = NavyBlueDeep, onPrimaryContainer = TealBg,
-    secondary = Color(0xFF457B9D), onSecondary = Color(0xFF000000),
-    secondaryContainer = Color(0xFF122238), onSecondaryContainer = Teal,
-    tertiary = Color(0xFF2F7B4C), tertiaryContainer = Color(0xFF133822), onTertiaryContainer = Color(0xFFD8ECD4),
-    background = Color(0xFF1D2226), onBackground = Color(0xFFE9E9E9),
-    surface = Color(0xFF1D2226), onSurface = Color(0xFFE9E9E9),
-    surfaceVariant = Color(0xFF293138), onSurfaceVariant = Color(0xFFB1B3B6),
-    surfaceContainerLowest = Color(0xFF1D2226), surfaceContainerLow = Color(0xFF293138),
-    surfaceContainer = Color(0xFF1D2226), surfaceContainerHigh = Color(0xFF38434F),
-    outline = Color(0xFF4A5568), outlineVariant = Color(0xFF293138),
-    error = Color(0xFFE1696E),
+    primary = TealLight,
+    onPrimary = Color(0xFF022C22),
+    primaryContainer = SurfaceVariantDark,
+    onPrimaryContainer = TealWash,
+    secondary = TealLight,
+    onSecondary = Color(0xFF022C22),
+    secondaryContainer = Color(0xFF134E4A),
+    onSecondaryContainer = TealWash,
+    tertiary = Color(0xFF60A5FA),
+    tertiaryContainer = Color(0xFF1E3A8A),
+    onTertiaryContainer = Color(0xFFDBEAFE),
+    background = BackgroundDark,
+    onBackground = Color(0xFFF1F5F9),
+    surface = SurfaceDark,
+    onSurface = Color(0xFFF1F5F9),
+    surfaceVariant = SurfaceVariantDark,
+    onSurfaceVariant = TextMutedDark,
+    surfaceContainerLowest = BackgroundDark,
+    surfaceContainerLow = SurfaceDark,
+    surfaceContainer = SurfaceVariantDark,
+    surfaceContainerHigh = BorderDark,
+    outline = BorderDark,
+    outlineVariant = SurfaceVariantDark,
+    error = Color(0xFFF87171),
+    onError = Color.Black,
 )
 
 private val AppTypography = Typography().run {
     copy(
+        displayLarge = displayLarge.copy(fontWeight = FontWeight.ExtraBold, letterSpacing = (-1.0).sp),
+        headlineLarge = headlineLarge.copy(fontWeight = FontWeight.Bold, letterSpacing = (-0.5).sp),
+        headlineMedium = headlineMedium.copy(fontWeight = FontWeight.Bold, letterSpacing = (-0.3).sp),
         headlineSmall = headlineSmall.copy(fontWeight = FontWeight.SemiBold, letterSpacing = (-0.2).sp),
-        titleLarge = titleLarge.copy(fontWeight = FontWeight.SemiBold),
+        titleLarge = titleLarge.copy(fontWeight = FontWeight.SemiBold, letterSpacing = (-0.1).sp),
         titleMedium = titleMedium.copy(fontWeight = FontWeight.SemiBold),
-        bodyLarge = bodyLarge.copy(lineHeight = 24.sp),
-        bodyMedium = bodyMedium.copy(lineHeight = 21.sp),
-        labelLarge = labelLarge.copy(fontWeight = FontWeight.Medium),
+        titleSmall = titleSmall.copy(fontWeight = FontWeight.SemiBold),
+        bodyLarge = bodyLarge.copy(lineHeight = 24.sp, letterSpacing = 0.15.sp),
+        bodyMedium = bodyMedium.copy(lineHeight = 22.sp, letterSpacing = 0.1.sp),
+        bodySmall = bodySmall.copy(lineHeight = 18.sp),
+        labelLarge = labelLarge.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.1.sp),
+        labelMedium = labelMedium.copy(fontWeight = FontWeight.Medium),
+        labelSmall = labelSmall.copy(fontWeight = FontWeight.Medium),
     )
 }
 
 private val AppShapes = Shapes(
-    small = RoundedCornerShape(4.dp), // LinkedIn uses squarer corners
-    medium = RoundedCornerShape(8.dp),
-    large = RoundedCornerShape(12.dp),
+    extraSmall = RoundedCornerShape(6.dp),
+    small = RoundedCornerShape(10.dp),
+    medium = RoundedCornerShape(16.dp),
+    large = RoundedCornerShape(22.dp),
+    extraLarge = RoundedCornerShape(28.dp),
 )
 
 @Composable

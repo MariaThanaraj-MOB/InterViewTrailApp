@@ -41,6 +41,7 @@ class Navigator {
 
     fun push(s: Screen) { stacks[tab] = stacks[tab].orEmpty() + s }
     fun pop() { stacks[tab] = stacks[tab].orEmpty().dropLast(1) }
+    fun popToRoot() { stacks[tab] = emptyList() }
     fun select(t: Tab) { if (t == tab) stacks[t] = emptyList() else tab = t }
     fun openIn(t: Tab, s: Screen) { tab = t; push(s) }
 }

@@ -15,8 +15,13 @@ import platform.posix.memcpy
 
 actual val defaultApiBaseUrl: String = "http://localhost:8080"   // simulator shares the host network
 
+@OptIn(ExperimentalForeignApi::class)
 private class IosSpeechToText : SpeechToText {
-    private val speechRecognizer = SFSpeechRecognizer(NSLocale(localeIdentifier = "en-IN"))
+    private val speechRecognizer: SFSpeechRecognizer? =
+        SFSpeechRecognizer(NSLocale(localeIdentifier = "en-IN"))
+            ?: SFSpeechRecognizer(NSLocale(localeIdentifier = "en-US"))
+            ?: SFSpeechRecognizer(NSLocale.currentLocale)
+
     private var audioEngine: AVAudioEngine? = null
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest? = null
     private var recognitionTask: SFSpeechRecognitionTask? = null
@@ -25,62 +30,117 @@ private class IosSpeechToText : SpeechToText {
         get() = speechRecognizer?.isAvailable() == true
 
     @OptIn(ExperimentalForeignApi::class)
-    override fun start(onResult: (String) -> Unit, onError: (String) -> Unit) {
+    override fun start(
+        onResult: (String) -> Unit,
+        onError: (String) -> Unit,
+        onPartialResult: ((String) -> Unit)?,
+    ) {
+        val recognizer = speechRecognizer
+        if (recognizer == null || !recognizer.isAvailable()) {
+            onError("Speech recognition service is not available.")
+            return
+        }
+
         SFSpeechRecognizer.requestAuthorization { authStatus ->
             dispatch_async(dispatch_get_main_queue()) {
-                if (authStatus == null || !authStatus.toString().contains("Authorized")) {
-                    onError("Speech recognition not authorized.")
+                if (authStatus != SFSpeechRecognizerAuthorizationStatus.SFSpeechRecognizerAuthorizationStatusAuthorized) {
+                    onError("Speech recognition permission denied.")
                     return@dispatch_async
                 }
 
-                stop()
+                val audioSession = AVAudioSession.sharedInstance()
+                audioSession.requestRecordPermission { micGranted ->
+                    dispatch_async(dispatch_get_main_queue()) {
+                        if (!micGranted) {
+                            onError("Microphone permission denied.")
+                            return@dispatch_async
+                        }
 
-                val engine = AVAudioEngine()
-                audioEngine = engine
-                val request = SFSpeechAudioBufferRecognitionRequest()
-                recognitionRequest = request
-                request.shouldReportPartialResults = false
+                        stop()
 
-                val node = engine.inputNode
-                val recordingFormat = node.outputFormatForBus(0u)
-                node.installTapOnBus(0u, 1024u, recordingFormat) { buffer, _ ->
-                    if (buffer != null) {
-                        request.appendAudioPCMBuffer(buffer)
-                    }
-                }
+                        val setupSuccess = runCatching {
+                            // Configure audio session for recording
+                            audioSession.setCategory(
+                                category = AVAudioSessionCategoryPlayAndRecord,
+                                mode = AVAudioSessionModeMeasurement,
+                                options = AVAudioSessionCategoryOptionDefaultToSpeaker,
+                                error = null
+                            )
+                            audioSession.setActive(
+                                true,
+                                withOptions = AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation,
+                                error = null
+                            )
 
-                runCatching {
-                    engine.prepare()
-                    engine.startAndReturnError(null)
-                }.onFailure {
-                    onError("Audio engine failed to start.")
-                    stop()
-                    return@dispatch_async
-                }
+                            val engine = AVAudioEngine()
+                            audioEngine = engine
+                            val node = engine.inputNode
+                            node.removeTapOnBus(0u)
 
-                recognitionTask = speechRecognizer?.recognitionTaskWithRequest(request) { result, error ->
-                    if (result != null) {
-                        val text = result.bestTranscription.formattedString
-                        if (text.isNotBlank()) {
-                            onResult(text)
+                            val recordingFormat = node.outputFormatForBus(0u)
+                            if (recordingFormat.sampleRate <= 0.0 || recordingFormat.channelCount == 0u) {
+                                onError("Microphone audio is unavailable on simulator. Please test voice on a physical device.")
+                                stop()
+                                return@dispatch_async
+                            }
+
+                            val request = SFSpeechAudioBufferRecognitionRequest()
+                            recognitionRequest = request
+                            request.shouldReportPartialResults = true
+
+                            node.installTapOnBus(0u, 1024u, recordingFormat) { buffer, _ ->
+                                if (buffer != null) {
+                                    request.appendAudioPCMBuffer(buffer)
+                                }
+                            }
+
+                            engine.prepare()
+                            engine.startAndReturnError(null)
+
+                            recognitionTask = recognizer.recognitionTaskWithRequest(request) { result, error ->
+                                if (result != null) {
+                                    val text = result.bestTranscription.formattedString
+                                    if (text.isNotBlank()) {
+                                        dispatch_async(dispatch_get_main_queue()) {
+                                            onPartialResult?.invoke(text)
+                                            if (result.isFinal()) {
+                                                onResult(text)
+                                                stop()
+                                            }
+                                        }
+                                    }
+                                }
+                                if (error != null) {
+                                    dispatch_async(dispatch_get_main_queue()) {
+                                        onError("Didn't catch that. Try again.")
+                                        stop()
+                                    }
+                                }
+                            }
+                        }.isSuccess
+
+                        if (!setupSuccess) {
+                            onError("Microphone audio is unavailable. Please verify microphone permissions or test on device.")
                             stop()
                         }
-                    }
-                    if (error != null) {
-                        onError("Didn't catch that. Try again.")
-                        stop()
                     }
                 }
             }
         }
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     override fun stop() {
         runCatching {
             audioEngine?.stop()
             audioEngine?.inputNode?.removeTapOnBus(0u)
             recognitionRequest?.endAudio()
             recognitionTask?.cancel()
+            AVAudioSession.sharedInstance().setActive(
+                false,
+                withOptions = AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation,
+                error = null
+            )
         }
         audioEngine = null
         recognitionRequest = null

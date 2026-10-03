@@ -11,7 +11,11 @@ expect val defaultApiBaseUrl: String
  */
 interface SpeechToText {
     val isAvailable: Boolean
-    fun start(onResult: (String) -> Unit, onError: (String) -> Unit)
+    fun start(
+        onResult: (String) -> Unit,
+        onError: (String) -> Unit,
+        onPartialResult: ((String) -> Unit)? = null,
+    )
     fun stop()
 }
 
